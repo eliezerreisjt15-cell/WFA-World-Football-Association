@@ -141,7 +141,7 @@ class Match{
  finish(){this.state="FINISHED";audio.whistle();this.recordFinal();showPostgame()}
  pause(){this.state="PAUSED";$("#pause").classList.remove("hidden")}
  resume(){this.state="PLAYING";$("#pause").classList.add("hidden");this.last=performance.now()}
- saveStats(){const s=SaveManager.get()||{matches:0,wins:0,draws:0,losses:0,goals:0};s.lastResult={home:this.home.name,away:this.away.name,homeGoals:this.home.goals,awayGoals:this.away.goals};s.goals=this.home.goals;SaveManager.save(s)}
+ saveStats(){const s=SaveManager.get()||{matches:0,wins:0,draws:0,losses:0,goals:0};s.lastResult={home:this.home.name,away:this.away.name,homeGoals:this.home.goals,awayGoals:this.away.goals};SaveManager.save(s)}
  recordFinal(){const s=SaveManager.get()||{matches:0,wins:0,draws:0,losses:0,goals:0};s.matches++;s.goals+=this.home.goals;this.home.goals>this.away.goals?s.wins++:this.home.goals===this.away.goals?s.draws++:s.losses++;s.lastResult={home:this.home.name,away:this.away.name,homeGoals:this.home.goals,awayGoals:this.away.goals};SaveManager.save(s)}
 }
 class Game{
