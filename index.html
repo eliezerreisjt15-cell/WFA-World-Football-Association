@@ -6185,7 +6185,7 @@ function autonomous(m,dt){
 }
 function human(ctx,p,x,y,scale,selected){
  const v=V(p),s=scale*v.height,run=v.state==="SPRINT"?1:v.state==="RUN"?.72:v.state==="WALK"?.42:.08,sw=Math.sin(v.phase)*run,sd=Math.cos(v.phase)*run;
- ctx.save();ctx.translate(x,y);ctx.rotate(v.facing+Math.PI/2);ctx.lineCap="round";
+ ctx.save();ctx.translate(x,y);if(v.state==="GK_DIVE"){ctx.translate((p.team.index?-1:1)*s*.22,0);ctx.rotate((p.team.index?-1:1)*.72)}ctx.rotate(v.facing+Math.PI/2);ctx.lineCap="round";
  ctx.save();ctx.rotate(-v.facing-Math.PI/2);ctx.fillStyle="rgba(0,0,0,.28)";ctx.beginPath();ctx.ellipse(0,s*.60,s*.38,s*.12,0,0,6.28);ctx.fill();ctx.restore();
  ctx.lineWidth=s*.115;ctx.strokeStyle=v.skin;ctx.beginPath();ctx.moveTo(-s*.18,-s*.05);ctx.lineTo(-s*(.30+sw*.06),s*(.15+sd*.07));ctx.stroke();ctx.beginPath();ctx.moveTo(s*.18,-s*.05);ctx.lineTo(s*(.30-sw*.06),s*(.15-sd*.07));ctx.stroke();
  ctx.lineWidth=s*.14;ctx.strokeStyle="#e9edf0";ctx.beginPath();ctx.moveTo(-s*.10,s*.28);ctx.lineTo(-s*(.13+sw*.10),s*.56);ctx.stroke();ctx.beginPath();ctx.moveTo(s*.10,s*.28);ctx.lineTo(s*(.13-sw*.10),s*.56);ctx.stroke();
@@ -6230,8 +6230,8 @@ function sf(){const c=renderer.x,w=innerWidth,h=innerHeight;c.clearRect(0,0,w,h)
 function specialUpdate(dt){
  const s=R.special;if(!s)return;if(input.pressed("Escape")){R.mode="match";R.special=null;$("#menu").classList.remove("hidden");return}
  if(R.mode==="penalties"){
-  if(s.phase==="AIM"){if(input.down("KeyA"))s.aim=C(s.aim-dt*.65,.08,.92);if(input.down("KeyD"))s.aim=C(s.aim+dt*.65,.08,.92);if(input.down("KeyW"))s.ballY=C(s.ballY-dt*.38,.48,.75);if(input.down("KeyS"))s.ballY=C(s.ballY+dt*.38,.48,.75);if(input.pressed("KeyK")||input.pressed("Space")){s.phase="SHOT";s.time=0;s.keeperY=.14+Math.random()*.72;s.vx=(s.aim-.73)*1.45;s.vy=(s.ballY-.74)*1.2-.44}}
-  else if(s.phase==="SHOT"){s.time+=dt;s.ballX+=s.vx*dt;s.ballY+=s.vy*dt;s.vy+=.18*dt;if(s.time>.48){const saved=Math.abs(s.keeperY-s.aim)<.13&&Math.random()<.46;s.result=saved?"🧤 DEFESA!":"⚽ GOL!";s.score[saved?1:0]++;s.shots++;s.phase=s.shots>=5?"DONE":"AIM";if(saved)audio.beep(180,.18);else audio.goal()}}
+  if(s.phase==="AIM"){if(input.down("KeyA"))s.aim=C(s.aim-dt*.65,.08,.92);if(input.down("KeyD"))s.aim=C(s.aim+dt*.65,.08,.92);if(input.down("KeyW"))s.ballY=C(s.ballY-dt*.38,.48,.75);if(input.down("KeyS"))s.ballY=C(s.ballY+dt*.38,.48,.75);if(input.pressed("KeyK")||input.pressed("Space")){s.phase="SHOT";s.time=0;s.keeperTarget=.14+Math.random()*.72;s.keeperY=.5;s.vx=(s.aim-.73)*1.45;s.vy=(s.ballY-.74)*1.2-.44}}
+  else if(s.phase==="SHOT"){s.time+=dt;s.ballX+=s.vx*dt;s.ballY+=s.vy*dt;s.vy+=.18*dt;s.keeperY+=(s.keeperTarget-s.keeperY)*Math.min(1,dt*7);if(s.time>.48){const saved=Math.abs(s.keeperY-s.aim)<.13&&Math.random()<.46;s.result=saved?"🧤 DEFESA!":"⚽ GOL!";s.score[saved?1:0]++;s.shots++;s.phase=s.shots>=5?"DONE":"AIM";if(saved)audio.beep(180,.18);else audio.goal()}}
   else if(s.phase==="DONE"&&(input.pressed("KeyK")||input.pressed("Space")))R.penalties();
  }else{
   const p=s.p,g=s.g,ax=(input.down("KeyD")?1:0)-(input.down("KeyA")?1:0),ay=(input.down("KeyS")?1:0)-(input.down("KeyW")?1:0),d=Math.hypot(ax,ay)||1;
